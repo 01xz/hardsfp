@@ -9,6 +9,9 @@ case class SFPMulCore(expWidth: Int, fracWidth: Int) extends Component {
     val result = out(SFP(expWidth + 1, fracWidth + 1))
   }
 
+  def getExpHi(x: Int) = x >>> expWidth
+  def getExpLo(x: Int) = x & (0xffffffff >>> (32 - expWidth))
+
   def getFracHi(x: Int) = (x >>> fracWidth) << (32 - fracWidth)
   def getFracLo(x: Int) = x << (32 - fracWidth)
 
@@ -17,6 +20,8 @@ case class SFPMulCore(expWidth: Int, fracWidth: Int) extends Component {
     val fracLo = (getFracLo(x) >>> 1) | 0x80000000L
     return fracHi * fracLo
   }
+
+  def checkZero(x: Int): Boolean = (getExpHi(x) == 0) | (getExpLo(x) == 0)
 
   def getCarry(x: Int): Boolean = {
     val frac = (fracBeforeRound(x) >>> 32).toInt
@@ -32,6 +37,10 @@ case class SFPMulCore(expWidth: Int, fracWidth: Int) extends Component {
     }
   }
 
+  val zeroLUT = Vec.tabulate(1 << 2 * expWidth) { i: Int =>
+    Bool(checkZero(i))
+  }
+
   val carryLUT = Vec.tabulate(1 << 2 * fracWidth) { i: Int =>
     U(getCarry(i).toInt)
   }
@@ -40,10 +49,11 @@ case class SFPMulCore(expWidth: Int, fracWidth: Int) extends Component {
     U(getFrac(i))
   }
 
+  val zero  = zeroLUT(io.a.exp @@ io.b.exp)
   val carry = carryLUT(io.a.frac @@ io.b.frac)
 
   io.result.sign := io.a.sign ^ io.b.sign
-  io.result.exp  := (io.a.exp +^ io.b.exp) + carry
+  io.result.exp  := Mux(zero, U(0), (io.a.exp +^ io.b.exp) + carry)
   io.result.frac := fracLUT(io.a.frac @@ io.b.frac)
 }
 
