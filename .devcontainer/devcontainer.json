@@ -1,0 +1,31 @@
+{
+    "name": "hardsfp-dev",
+    "image": "01xz/spinalhdl-dev:latest",
+    "settings": {},
+    "extensions": [
+        "eirikpre.systemverilog",
+        "scala-lang.scala",
+        "scala-lang.scala-snippets",
+        "scalameta.metals"
+    ],
+    "mounts": [
+        "source=/opt/synopsys,target=/opt/synopsys,type=bind,consistency=cached",
+        "source=/opt/xilinx,target=/opt/xilinx,type=bind,consistency=cached",
+        "source=/mnt/storage/pdks,target=/opt/pdks,type=bind,consistency=cached"
+    ],
+    "runArgs": [
+        "-h",
+        "spinalhdl-dev",
+        "--name",
+        "spinalhdl-dev",
+        "-v",
+        "/etc/timezone:/etc/timezone:ro",
+        "-v",
+        "/etc/localtime:/etc/localtime:ro"
+    ],
+    "remoteUser": "vscode",
+    "containerEnv": {
+        "HTTP_PROXY": "172.31.80.176:20171",
+        "HTTPS_PROXY": "172.31.80.176:20171"
+    }
+}
