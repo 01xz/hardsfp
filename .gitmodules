@@ -1,0 +1,3 @@
+[submodule "utils/softsfp"]
+	path = utils/softsfp
+	url = https://github.com/01xz/softsfp
