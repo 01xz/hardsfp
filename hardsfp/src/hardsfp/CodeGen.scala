@@ -6,7 +6,10 @@ import spinal.lib._
 object CodeGenConfig
     extends SpinalConfig(
       mode = Verilog,
-      defaultConfigForClockDomains = ClockDomainConfig(resetKind = SYNC, resetActiveLevel = LOW),
+      defaultConfigForClockDomains = ClockDomainConfig(
+        resetKind = SYNC,
+        resetActiveLevel = LOW
+      ),
       targetDirectory = "rtl"
     )
 
